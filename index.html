@@ -19,7 +19,7 @@ body{padding:10px}
 #pyth-live2 .workgrid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(250px,.9fr);gap:10px;align-items:stretch}
 #pyth-live2 .figure-layout{display:block}
 #pyth-live2 #pl-drawing{min-width:0}
-#pyth-live2 svg{width:100%;height:390px;max-height:48vh;min-height:280px;display:block}
+#pyth-live2 svg{width:100%;height:500px;max-height:58vh;min-height:380px;display:block}
 #pyth-live2 .sq{fill:#e6a23c;fill-opacity:.13;stroke:#c18427;stroke-width:2.2}
 #pyth-live2 .tri{fill:#60a5fa;fill-opacity:.10;stroke:#1f2937;stroke-width:2.7}
 #pyth-live2 .vertex{font-size:17px;font-weight:700;fill:#1f2937;paint-order:stroke;stroke:#fff;stroke-width:4px}
@@ -64,12 +64,12 @@ body{padding:10px}
  body{padding:6px}
  #pyth-live2 .workgrid{grid-template-columns:1fr}
  #pyth-live2 .figure-layout{display:block}
- #pyth-live2 svg{height:340px;max-height:none;min-height:280px}
+ #pyth-live2 svg{height:420px;max-height:none;min-height:340px}
  #pyth-live2 .side-key{gap:3px 12px}
  #pyth-live2 .proof{min-height:auto}
 }
 @media(min-width:721px) and (max-height:800px){
- #pyth-live2 svg{height:330px;min-height:260px;max-height:42vh}
+ #pyth-live2 svg{height:430px;min-height:340px;max-height:52vh}
  #pyth-live2 .panel{padding:8px}
  #pyth-live2{gap:6px}
 }
@@ -224,7 +224,7 @@ $('verify-areas').addEventListener('click',()=>{
 $('verify-length').addEventListener('click',()=>{
  const answer=Number($('length-answer').value),correct=target(q);
  if(close(answer,correct)){
-  if(lengthTries<2)score++;
+  if(lengthTries<2)score+=areaTries>=2?0.5:1;
   $('score').textContent=`Score : ${score} / 5`;$('length-feedback').textContent='Bonne réponse !';$('length-feedback').style.color='#16a34a';$('verify-length').disabled=true;$('next').classList.remove('hidden');proofLength();
  }else{
   lengthTries++;
@@ -248,7 +248,7 @@ $('result-form').addEventListener('submit',async event=>{
  if(!emailReady||!window.emailjs){status.textContent="Le service d'envoi n'est pas disponible. Préviens ton professeur.";status.style.color='#dc2626';return}
  button.disabled=true;button.textContent='Envoi en cours…';status.textContent='';
  const dateEnvoi=new Date().toLocaleString('fr-FR');
- const templateParams={prenom,name:prenom,student_name:prenom,classe,class:classe,student_class:classe,score:`${score} / 5`,resultat:`${score} / 5`,result:`${score} / 5`,note:`${score} / 5`,date:dateEnvoi,date_envoi:dateEnvoi,exercise:'Théorème de Pythagore',exercice:'Théorème de Pythagore',exercise_name:'Théorème de Pythagore'};
+ const templateParams={prenom,name:prenom,student_name:prenom,classe,class:classe,student_class:classe,score:`${score} / 5`,resultat:`${score} / 5`,result:`${score} / 5`,note:`${score} / 5`,date:dateEnvoi,date_envoi:dateEnvoi,exercise:'Théorème de Pythagore',exercice:'Théorème de Pythagore',exercise_name:'Théorème de Pythagore',exerciseur:'Théorème de Pythagore'};
  try{await window.emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,templateParams);status.textContent='Résultat envoyé à ton professeur. Merci !';status.style.color='#16a34a';button.textContent='Résultat envoyé'}
  catch(error){console.error('Erreur EmailJS :',error);status.textContent="L'envoi a échoué. Vérifie les informations ou préviens ton professeur.";status.style.color='#dc2626';button.disabled=false;button.textContent='Réessayer'}
 });
