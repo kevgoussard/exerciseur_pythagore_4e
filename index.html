@@ -1,0 +1,580 @@
+
+<div id="pyth-live2" class="w-full flex flex-col gap-3 text-base">
+<style>
+#pyth-live2{color:var(--viz-text);font-family:inherit}
+#pyth-live2 .panel{border:1px solid var(--viz-border);border-radius:12px;padding:12px}
+#pyth-live2 .muted{color:var(--viz-muted)}
+#pyth-live2 input{background:var(--viz-card);border:1px solid var(--viz-border);border-radius:7px;padding:6px;color:var(--viz-text);text-align:center;min-width:0}
+#pyth-live2 input.good{background-color:#dcfce7!important;background:#dcfce7!important;border:3px solid #16a34a!important;color:#14532d!important;font-weight:800!important;box-shadow:0 0 0 2px rgba(22,163,74,.22)!important;opacity:1!important}
+#pyth-live2 input.bad{background-color:#fee2e2!important;background:#fee2e2!important;border:3px solid #dc2626!important;color:#991b1b!important;font-weight:800!important;box-shadow:0 0 0 2px rgba(220,38,38,.25)!important;opacity:1!important}
+#pyth-live2 input:read-only{cursor:default;opacity:1}
+#pyth-live2 button{border-radius:8px;padding:9px 14px;font-weight:600}
+#pyth-live2 .primary{background:var(--viz-accent);color:white}
+#pyth-live2 button:disabled{opacity:.45}
+#pyth-live2 svg{width:100%;height:auto;display:block;max-height:none}
+#pyth-live2 .sq{fill:#e6a23c;fill-opacity:.13;stroke:#c18427;stroke-width:2.2}
+#pyth-live2 .tri{fill:#60a5fa;fill-opacity:.10;stroke:var(--viz-text);stroke-width:2.7}
+#pyth-live2 .vertex{font-size:17px;font-weight:700;fill:var(--viz-text);paint-order:stroke;stroke:var(--viz-card);stroke-width:4px}
+#pyth-live2 .figure-layout{display:grid;grid-template-columns:minmax(0,1fr) 125px;gap:10px;align-items:center}
+#pyth-live2 .side-key{border:1px solid var(--viz-border);border-radius:9px;padding:10px;font-size:14px;line-height:2}
+#pyth-live2 .side-key strong{display:block;margin-bottom:5px}
+#pyth-live2 .workgrid{display:grid;grid-template-columns:minmax(0,2fr) minmax(190px,.8fr);gap:14px;align-items:start}
+#pyth-live2 .proof{border:1px solid var(--viz-border);border-radius:10px;padding:12px;line-height:1.8;overflow-wrap:anywhere;min-height:100%}
+#pyth-live2 .formula{font-weight:700;margin-top:8px}
+#pyth-live2 .feedback{font-size:14px;min-height:22px}
+#pyth-live2 .step2{border-top:1px solid var(--viz-border);padding-top:12px;margin-top:12px}
+#pyth-live2 .finish-form{max-width:440px;margin:18px auto 4px}
+#pyth-live2 .finish-form label{display:block;font-size:14px;font-weight:600;margin:12px 0 5px}
+#pyth-live2 .finish-form input{width:100%;text-align:left;padding:10px}
+#pyth-live2 .finish-form button{margin-top:16px;width:100%}
+#pyth-live2 .send-status{font-size:14px;text-align:center;margin-top:12px;min-height:22px}
+@media(max-width:600px){
+ #pyth-live2 .workgrid{grid-template-columns:1fr}
+ #pyth-live2 .figure-layout{grid-template-columns:minmax(0,1fr) 110px;gap:6px}
+ #pyth-live2 .side-key{font-size:12px;padding:7px}
+}
+</style>
+
+<div class="flex justify-between items-center gap-2">
+ <strong>Théorème de Pythagore</strong>
+ <span id="pl-score" class="text-sm muted">Score : 0 / 5</span>
+</div>
+
+<div class="panel">
+ <div id="pl-question" class="font-semibold mb-2"></div>
+ <div id="pl-instruction" class="text-sm muted mb-3"></div>
+
+ <div class="workgrid" id="pl-workgrid">
+  <div class="min-w-0">
+   <div class="figure-layout">
+    <div id="pl-drawing"></div>
+    <div id="pl-side-key" class="side-key"></div>
+   </div>
+
+   <div id="pl-area-feedback" class="feedback mt-2" aria-live="polite"></div>
+
+   <div id="pl-area-controls" class="mt-2">
+    <button id="pl-verify-areas" class="primary">Vérifier les aires</button>
+   </div>
+
+   <div id="pl-length-zone" class="step2 hidden">
+    <div class="font-semibold mb-2">Longueur recherchée</div>
+    <div class="flex items-center gap-2 max-w-sm">
+     <input id="pl-length-answer" type="number" step="any" placeholder="Valeur" aria-label="Longueur recherchée" class="w-full">
+     <span>cm</span>
+     <button id="pl-verify-length" class="primary">Vérifier</button>
+    </div>
+    <div id="pl-length-feedback" class="feedback mt-2" aria-live="polite"></div>
+   </div>
+  </div>
+
+  <div class="proof">
+   <strong>Rédaction</strong>
+   <div id="pl-proof" class="text-sm muted mt-2"></div>
+  </div>
+ </div>
+
+ <div id="pl-finish" class="hidden finish-form">
+  <div class="text-center">
+   <div class="font-bold text-xl">Exercice terminé !</div>
+   <div class="text-lg mt-2">Ton score : <strong id="pl-final-score">0 / 5</strong></div>
+   <p class="text-sm muted mt-2">Indique ton prénom et ta classe pour envoyer ton résultat à ton professeur.</p>
+  </div>
+
+  <form id="pl-result-form">
+   <label for="pl-firstname">Prénom</label>
+   <input id="pl-firstname" name="prenom" type="text" maxlength="50" required autocomplete="given-name" placeholder="Ton prénom">
+
+   <label for="pl-class">Classe</label>
+   <input id="pl-class" name="classe" type="text" maxlength="30" required placeholder="Exemple : 3e A">
+
+   <button id="pl-send-result" type="submit" class="primary">Envoyer mon résultat</button>
+   <div id="pl-send-status" class="send-status" aria-live="polite"></div>
+  </form>
+ </div>
+</div>
+
+<div class="flex justify-end">
+ <button id="pl-next" class="primary hidden">Question suivante</button>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script>
+(()=>{
+const root=document.getElementById('pyth-live2');
+if(!root||root.dataset.ready)return;
+root.dataset.ready='1';
+
+const $=id=>root.querySelector('#pl-'+id);
+
+/* Configuration EmailJS : identifiants repris de l'exerciseur Thalès */
+const EMAILJS_PUBLIC_KEY='ATJ81EsZMjUM7kMEV';
+const EMAILJS_SERVICE_ID='service_ddxhm89';
+const EMAILJS_TEMPLATE_ID='template_ycpslgy';
+
+let emailReady=false;
+
+if(window.emailjs){
+ try{
+  emailjs.init({publicKey:EMAILJS_PUBLIC_KEY});
+  emailReady=true;
+ }catch(error){
+  console.error('Initialisation EmailJS impossible :',error);
+ }
+}
+
+const all=[
+ {v:['A','B','C'],a:3,b:4,u:'c'},
+ {v:['M','N','P'],a:5,b:12,u:'c'},
+ {v:['R','S','T'],a:8,b:15,u:'c'},
+ {v:['D','E','F'],a:5,b:12,u:'b'},
+ {v:['K','L','M'],a:7,b:24,u:'a'}
+];
+
+const shuffle=a=>{
+ a=[...a];
+ for(let i=a.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [a[i],a[j]]=[a[j],a[i]];
+ }
+ return a;
+};
+
+const first=shuffle([0,1,2]);
+const order=[...first.slice(0,2),...shuffle([first[2],3,4])];
+
+let index=0,score=0,q,lengthTries=0,areaTries=0;
+
+const names=q=>({
+ a:q.v[0]+q.v[1],
+ b:q.v[0]+q.v[2],
+ c:q.v[1]+q.v[2]
+});
+
+const areas=q=>({
+ a:q.a*q.a,
+ b:q.b*q.b,
+ c:q.a*q.a+q.b*q.b
+});
+
+const sideLengths=q=>({
+ a:q.a,
+ b:q.b,
+ c:Math.hypot(q.a,q.b)
+});
+
+const target=q=>q.u==='c'
+ ?Math.hypot(q.a,q.b)
+ :q.u==='a'?q.a:q.b;
+
+const close=(x,y)=>Number.isFinite(x)&&Math.abs(x-y)<.011;
+
+const P=(x,y)=>({x,y});
+const add=(a,b)=>P(a.x+b.x,a.y+b.y);
+const sub=(a,b)=>P(a.x-b.x,a.y-b.y);
+const mul=(a,k)=>P(a.x*k,a.y*k);
+const dot=(a,b)=>a.x*b.x+a.y*b.y;
+
+function normal(p,r,t){
+ const d=sub(r,p),len=Math.hypot(d.x,d.y);
+ let n=P(-d.y/len,d.x/len);
+ if(dot(n,sub(t,mul(add(p,r),.5)))>0)n=mul(n,-1);
+ return n;
+}
+
+function square(p,r,t){
+ const d=sub(r,p),len=Math.hypot(d.x,d.y);
+ const n=normal(p,r,t),off=mul(n,len);
+ return[p,r,add(r,off),add(p,off)];
+}
+
+function render(){
+ q=all[order[index]];
+ lengthTries=0;
+ areaTries=0;
+
+ $('question').textContent='Calcule la longueur '+names(q)[q.u]+'.';
+
+ $('instruction').textContent=
+ "Étape 1 : Calcule l'aire des carrés dont tu connais le côté et utilise l'égalité de Pythagore pour en déduire l'aire du troisième carré.";
+
+ $('length-zone').classList.add('hidden');
+ $('next').classList.add('hidden');
+
+ $('area-feedback').textContent='';
+ $('area-feedback').style.color='var(--viz-text)';
+ $('length-feedback').textContent='';
+ $('proof').innerHTML='';
+
+ $('area-controls').classList.remove('hidden');
+ $('verify-areas').disabled=false;
+ $('verify-areas').classList.remove('hidden');
+
+ $('length-answer').value='';
+ $('verify-length').disabled=false;
+
+ draw();
+}
+
+function draw(){
+ const a=q.a*22,b=q.b*22;
+ let pts=[P(0,0),P(a,0),P(0,b)];
+
+ const angle=[0,Math.PI/2,Math.PI*1.5,Math.PI][index%4];
+ const mirror=index%2?-1:1;
+ const center=mul(add(add(pts[0],pts[1]),pts[2]),1/3);
+
+ pts=pts.map(p=>{
+  let z=mul(sub(p,center),mirror);
+  const c=Math.cos(angle),s=Math.sin(angle);
+  return P(z.x*c-z.y*s+center.x,z.x*s+z.y*c+center.y);
+ });
+
+ const [A,B,C]=pts;
+ const sq=[
+  square(A,B,C),
+  square(A,C,B),
+  square(B,C,A)
+ ];
+
+ const allPts=[...pts,...sq.flat()];
+ const minX=Math.min(...allPts.map(p=>p.x));
+ const maxX=Math.max(...allPts.map(p=>p.x));
+ const minY=Math.min(...allPts.map(p=>p.y));
+ const maxY=Math.max(...allPts.map(p=>p.y));
+
+ const scale=Math.min(700/(maxX-minX),470/(maxY-minY));
+
+ const X=x=>50+(x-minX)*scale;
+ const Y=y=>45+(y-minY)*scale;
+ const poly=p=>p.map(z=>`${X(z.x)},${Y(z.y)}`).join(' ');
+
+ const centers=sq.map(p=>
+  mul(p.reduce((s,z)=>add(s,z),P(0,0)),.25)
+ );
+
+ let svg='<svg viewBox="0 0 800 560" role="img" aria-label="Triangle rectangle et trois carrés">';
+
+ sq.forEach(p=>svg+=`<polygon class="sq" points="${poly(p)}"/>`);
+ svg+=`<polygon class="tri" points="${poly(pts)}"/>`;
+
+ const u=mul(sub(B,A),1/Math.hypot(B.x-A.x,B.y-A.y));
+ const w=mul(sub(C,A),1/Math.hypot(C.x-A.x,C.y-A.y));
+ const r=20;
+
+ const p1=add(A,mul(u,r));
+ const p2=add(add(A,mul(u,r)),mul(w,r));
+ const p3=add(A,mul(w,r));
+
+ svg+=`<polyline points="${X(p1.x)},${Y(p1.y)} ${X(p2.x)},${Y(p2.y)} ${X(p3.x)},${Y(p3.y)}" fill="none" stroke="var(--viz-text)" stroke-width="2"/>`;
+
+ pts.forEach((p,i)=>{
+  svg+=`<text class="vertex" x="${X(p.x)+(i===1?12:-18)}" y="${Y(p.y)+(i===2?21:-10)}">${q.v[i]}</text>`;
+ });
+
+ centers.forEach((p,i)=>{
+  const key=['a','b','c'][i];
+  const cx=X(p.x),cy=Y(p.y);
+
+  svg+=`<foreignObject x="${cx-36}" y="${cy-17}" width="72" height="34">
+   <div xmlns="http://www.w3.org/1999/xhtml" style="width:72px;height:34px;display:flex;align-items:center;justify-content:center">
+    <input data-area="${key}" type="number" step="any" aria-label="Aire du carré sur ${names(q)[key]}" placeholder="Aire" style="width:64px;height:29px;text-align:center;font-size:14px"/>
+   </div>
+  </foreignObject>`;
+ });
+
+ svg+='</svg>';
+ $('drawing').innerHTML=svg;
+
+ const n=names(q);
+ const lengths=sideLengths(q);
+
+ $('side-key').innerHTML=`
+  <strong>Longueurs</strong>
+  <div>${n.a} = ${q.u==='a'?'?':lengths.a+' cm'}</div>
+  <div>${n.b} = ${q.u==='b'?'?':lengths.b+' cm'}</div>
+  <div>${n.c} = ${q.u==='c'?'?':lengths.c+' cm'}</div>`;
+}
+
+function proofAreas(){
+ const n=names(q),e=areas(q);
+ let html=`
+  <p>Le triangle ${q.v.join('')} est rectangle en ${q.v[0]}.</p>
+  <p>L'hypoténuse est [${n.c}].</p>
+  <p>D'après le théorème de Pythagore :</p>
+  <p class="formula">${n.c}² = ${n.a}² + ${n.b}²</p>`;
+
+ if(q.u==='c'){
+  html+=`<p class="formula">${n.c}² = ${e.a} + ${e.b} = ${e.c} cm²</p>`;
+ }else if(q.u==='a'){
+  html+=`
+   <p class="formula">${n.a}² = ${n.c}² − ${n.b}²</p>
+   <p class="formula">${n.a}² = ${e.c} − ${e.b} = ${e.a} cm²</p>`;
+ }else{
+  html+=`
+   <p class="formula">${n.b}² = ${n.c}² − ${n.a}²</p>
+   <p class="formula">${n.b}² = ${e.c} − ${e.a} = ${e.b} cm²</p>`;
+ }
+
+ $('proof').innerHTML=html;
+}
+
+function goToLength(){
+ $('area-controls').classList.add('hidden');
+ $('length-zone').classList.remove('hidden');
+ $('instruction').textContent='Étape 2 : déduis-en la longueur recherchée.';
+}
+
+function setAreaState(el,state){
+ el.classList.remove('good','bad');
+ el.classList.add(state);
+ el.style.setProperty('background-color',state==='good'?'#dcfce7':'#fee2e2','important');
+ el.style.setProperty('border',state==='good'?'3px solid #16a34a':'3px solid #dc2626','important');
+ el.style.setProperty('color',state==='good'?'#14532d':'#991b1b','important');
+ el.style.setProperty('font-weight','800','important');
+}
+
+/* Conseils adaptés aux aires réellement erronées */
+function areaAdvice(wrongKeys){
+ const n=names(q);
+ const advice=[];
+
+ wrongKeys.forEach(k=>{
+  if(k==='a' && q.u==='a'){
+   advice.push(
+    `${n.a}² : pour trouver l'aire de ce carré, soustrais l'aire de l'autre petit carré à celle du carré de l'hypoténuse.`
+   );
+  }else if(k==='b' && q.u==='b'){
+   advice.push(
+    `${n.b}² : pour trouver l'aire de ce carré, soustrais l'aire de l'autre petit carré à celle du carré de l'hypoténuse.`
+   );
+  }else if(k==='c' && q.u==='c'){
+   advice.push(
+    `${n.c}² : pour trouver l'aire du carré construit sur l'hypoténuse, additionne les aires des deux autres carrés.`
+   );
+  }else{
+   advice.push(
+    `${n[k]}² : pour calculer l'aire de ce carré, multiplie la longueur de son côté par elle-même.`
+   );
+  }
+ });
+
+ return advice.join('<br>');
+}
+
+$('verify-areas').addEventListener('click',()=>{
+ areaTries++;
+ const e=areas(q);
+ let allCorrect=true;
+ const wrongKeys=[];
+
+ ['a','b','c'].forEach(k=>{
+  const el=root.querySelector(`[data-area="${k}"]`);
+  if(el.readOnly)return;
+
+  const correct=el.value.trim()!==''&&close(Number(el.value),e[k]);
+
+  if(correct){
+   setAreaState(el,'good');
+   el.readOnly=true;
+  }else{
+   setAreaState(el,'bad');
+   wrongKeys.push(k);
+   allCorrect=false;
+  }
+ });
+
+ ['a','b','c'].forEach(k=>{
+  const el=root.querySelector(`[data-area="${k}"]`);
+  if(!el.readOnly)allCorrect=false;
+ });
+
+ if(allCorrect){
+  $('area-feedback').textContent='Les trois aires sont correctes.';
+  $('area-feedback').style.color='#16a34a';
+  proofAreas();
+  goToLength();
+  return;
+ }
+
+ if(areaTries>=2){
+  ['a','b','c'].forEach(k=>{
+   const el=root.querySelector(`[data-area="${k}"]`);
+   if(!el.readOnly){
+    el.value=e[k];
+    setAreaState(el,'good');
+    el.readOnly=true;
+   }
+  });
+
+  $('area-feedback').textContent=
+   'Voici les aires correctes. Tu peux maintenant passer au calcul de la longueur.';
+
+  $('area-feedback').style.color='#d97706';
+  proofAreas();
+  goToLength();
+ }else{
+  $('area-feedback').innerHTML=
+   'Certaines aires sont incorrectes.<br>'+areaAdvice(wrongKeys);
+
+  $('area-feedback').style.color='var(--viz-text)';
+ }
+});
+
+$('verify-length').addEventListener('click',()=>{
+ const answer=Number($('length-answer').value);
+ const correct=target(q);
+
+ if(close(answer,correct)){
+  if(lengthTries<2)score++;
+
+  $('score').textContent=`Score : ${score} / 5`;
+  $('length-feedback').textContent='Bonne réponse !';
+  $('length-feedback').style.color='#16a34a';
+
+  $('verify-length').disabled=true;
+  $('next').classList.remove('hidden');
+
+  proofLength();
+ }else{
+  lengthTries++;
+
+  if(lengthTries<2){
+   $('length-feedback').textContent='Ce n’est pas la bonne réponse. Essaie encore.';
+   $('length-feedback').style.color='#d97706';
+  }else{
+   $('length-feedback').textContent=`La longueur recherchée est ${correct} cm.`;
+   $('length-feedback').style.color='#d97706';
+
+   $('verify-length').disabled=true;
+   $('next').classList.remove('hidden');
+
+   proofLength();
+  }
+ }
+});
+
+function proofLength(){
+ const n=names(q),e=areas(q);
+ const k=q.u;
+ const known=k==='a'?'b':'a';
+ const missing=n[k],knownName=n[known],c=n.c;
+
+ if(k==='c'){
+  $('proof').innerHTML+=
+   `<p class="formula">${c} = √${e.c} = ${target(q)} cm</p>`;
+ }else{
+  const knownSq=e[known];
+  const missingSq=e.c-knownSq;
+
+  $('proof').innerHTML+=`
+   <p class="formula">${missing}² = ${c}² − ${knownName}²</p>
+   <p class="formula">${missing}² = ${e.c} − ${knownSq} = ${missingSq} cm²</p>
+   <p class="formula">${missing} = √${missingSq} = ${target(q)} cm</p>`;
+ }
+}
+
+/* Fin de l'exercice : affichage du formulaire */
+function finishExercise(){
+ $('question').textContent='';
+ $('instruction').textContent='';
+ $('workgrid').classList.add('hidden');
+
+ $('drawing').innerHTML='';
+ $('side-key').innerHTML='';
+ $('length-zone').classList.add('hidden');
+ $('area-controls').classList.add('hidden');
+ $('area-feedback').textContent='';
+ $('proof').innerHTML='';
+
+ $('next').classList.add('hidden');
+
+ $('final-score').textContent=`${score} / 5`;
+ $('finish').classList.remove('hidden');
+}
+
+/* Envoi du résultat par EmailJS */
+$('result-form').addEventListener('submit',async event=>{
+ event.preventDefault();
+
+ const prenom=$('firstname').value.trim();
+ const classe=$('class').value.trim();
+ const button=$('send-result');
+ const status=$('send-status');
+
+ if(!prenom||!classe){
+  status.textContent='Merci de renseigner ton prénom et ta classe.';
+  status.style.color='#dc2626';
+  return;
+ }
+
+ if(!emailReady||!window.emailjs){
+  status.textContent="Le service d'envoi n'est pas disponible. Préviens ton professeur.";
+  status.style.color='#dc2626';
+  return;
+ }
+
+ button.disabled=true;
+ button.textContent='Envoi en cours…';
+ status.textContent='';
+
+ const now=new Date();
+ const dateEnvoi=now.toLocaleString('fr-FR');
+
+ /*
+  Plusieurs noms de variables sont transmis pour rester compatibles
+  avec les champs possibles du modèle EmailJS de l'exerciseur Thalès.
+ */
+ const templateParams={
+  prenom:prenom,
+  name:prenom,
+  student_name:prenom,
+  classe:classe,
+  class:classe,
+  student_class:classe,
+  score:`${score} / 5`,
+  resultat:`${score} / 5`,
+  result:`${score} / 5`,
+  note:`${score} / 5`,
+  date:dateEnvoi,
+  date_envoi:dateEnvoi,
+  exercise:'Théorème de Pythagore',
+  exercice:'Théorème de Pythagore',
+  exercise_name:'Théorème de Pythagore'
+ };
+
+ try{
+  await emailjs.send(
+   EMAILJS_SERVICE_ID,
+   EMAILJS_TEMPLATE_ID,
+   templateParams
+  );
+
+  status.textContent='Résultat envoyé à ton professeur. Merci !';
+  status.style.color='#16a34a';
+  button.textContent='Résultat envoyé';
+ }catch(error){
+  console.error('Erreur EmailJS :',error);
+  status.textContent="L'envoi a échoué. Vérifie les informations ou préviens ton professeur.";
+  status.style.color='#dc2626';
+  button.disabled=false;
+  button.textContent='Réessayer';
+ }
+});
+
+$('next').addEventListener('click',()=>{
+ index++;
+
+ if(index>=5){
+  finishExercise();
+  return;
+ }
+
+ render();
+});
+
+render();
+})();
+</script>
