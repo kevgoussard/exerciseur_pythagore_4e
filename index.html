@@ -89,7 +89,7 @@ body{padding:10px}
    <div>
     <div class="figure-layout">
      <div id="pl-drawing"></div>
-     <div id="pl-side-key" class="side-key"></div>
+     
     </div>
     <div id="pl-area-feedback" class="feedback" aria-live="polite"></div>
     <div id="pl-area-controls" style="margin-top:7px">
@@ -142,16 +142,42 @@ const EMAILJS_SERVICE_ID='service_ddxhm89';
 const EMAILJS_TEMPLATE_ID='template_ycpslgy';
 let emailReady=false;
 if(window.emailjs){try{window.emailjs.init({publicKey:EMAILJS_PUBLIC_KEY});emailReady=true}catch(error){console.error('Initialisation EmailJS impossible :',error)}}
-const all=[
- {v:['A','B','C'],a:3,b:4,u:'c'},
- {v:['M','N','P'],a:5,b:12,u:'c'},
- {v:['R','S','T'],a:8,b:15,u:'c'},
- {v:['D','E','F'],a:5,b:12,u:'b'},
- {v:['K','L','M'],a:7,b:24,u:'a'}
-];
+// Banque de triplets pythagoriciens : les trois longueurs sont toujours entières.
+const triples=[
+ [3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29],
+ [6,8,10],[9,12,15],[10,24,26],[12,16,20],[15,20,25],
+ [16,30,34],[18,24,30],[21,28,35],[12,35,37],[9,40,41],
+ [11,60,61],[28,45,53],[33,56,65],[13,84,85],[36,77,85],
+ [24,45,51],[20,48,52],[14,48,50],[27,36,45],[30,40,50],
+ [15,36,39]
+].filter(t=>t[0]>0);
+
+// Mélange de la banque, puis sélection de cinq triangles différents.
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-const first=shuffle([0,1,2]);
-const order=[...first.slice(0,2),...shuffle([first[2],3,4])];
+// Pour les deux premières questions, les deux côtés de l'angle droit
+// mesurent chacun entre 1 et 15 cm.
+const firstQuestionPool=triples.filter(t=>t[0]>=1&&t[0]<=15&&t[1]>=1&&t[1]<=15);
+const firstTwo=shuffle(firstQuestionPool).slice(0,2);
+
+// Les trois dernières questions sont tirées dans une banque plus large,
+// sans reprendre les triangles déjà utilisés.
+const remaining=shuffle(triples.filter(t=>!firstTwo.some(chosen=>
+ chosen[0]===t[0]&&chosen[1]===t[1]&&chosen[2]===t[2]
+))).slice(0,3);
+const chosen=[...firstTwo,...remaining];
+const vertices=[['A','B','C'],['M','N','P'],['R','S','T'],['D','E','F'],['K','L','M']];
+const all=chosen.map((t,i)=>({v:vertices[i],a:t[0],b:t[1],u:'c'}));
+
+// Les deux premières questions cherchent toujours l'hypoténuse.
+// Dans les trois dernières, deux ou trois questions cherchent un côté de l'angle droit.
+const legCount=2+Math.floor(Math.random()*2);
+const lastTargets=shuffle(['a','b']).slice(0,2);
+if(legCount===3)lastTargets.push(shuffle(['a','b'])[0]);
+else lastTargets.push('c');
+all[2].u=lastTargets[0];
+all[3].u=lastTargets[1];
+all[4].u=lastTargets[2];
+const order=[0,1,...shuffle([2,3,4])];
 let index=0,score=0,q,lengthTries=0,areaTries=0;
 const names=q=>({a:q.v[0]+q.v[1],b:q.v[0]+q.v[2],c:q.v[1]+q.v[2]});
 const areas=q=>({a:q.a*q.a,b:q.b*q.b,c:q.a*q.a+q.b*q.b});
@@ -239,7 +265,7 @@ function proofLength(){
 }
 function finishExercise(){
  $('question').textContent='';$('instruction').textContent='';$('workgrid').classList.add('hidden');
- $('drawing').innerHTML='';$('side-key').innerHTML='';$('length-zone').classList.add('hidden');$('area-controls').classList.add('hidden');$('area-feedback').textContent='';$('proof').innerHTML='';
+ $('drawing').innerHTML='';$('side-key').innerHTML='';$('side-key').classList.add('hidden');$('length-zone').classList.add('hidden');$('area-controls').classList.add('hidden');$('area-feedback').textContent='';$('proof').innerHTML='';
  $('next').classList.add('hidden');$('final-score').textContent=`${score} / 5`;$('finish').classList.remove('hidden');
 }
 $('result-form').addEventListener('submit',async event=>{
