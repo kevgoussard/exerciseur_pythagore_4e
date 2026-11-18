@@ -4,103 +4,125 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Théorème de Pythagore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:#f1f5f9;color:#1f2937;font-family:Arial,Helvetica,sans-serif}
-body{padding:10px}
-#pyth-live2{width:100%;max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:8px;font-size:14px}
+:root{--ink:#1e2a78;--ink2:#3b4cc0;--text:#1f2433;--muted:#667085;--paper:#fffefa;--line:#d9e2f5;--margin:#e5484d;--a:#14a38b;--b:#f08c00;--c:#7c5cff;--ok:#12a150;--bad:#e03131;--warn:#d9730d}
+html,body{margin:0;padding:0;background:#eef2fb;color:var(--text);font-family:Nunito,"Segoe UI",Arial,sans-serif}
+body{padding:12px}
+#pyth-live2{width:100%;max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:10px;font-size:15px}
 #pyth-live2 .hidden{display:none!important}
-#pyth-live2 .topline{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 2px}
-#pyth-live2 .topline strong{font-size:18px}
-#pyth-live2 .panel{background:#fff;border:1px solid #cbd5e1;border-radius:10px;padding:10px}
-#pyth-live2 .muted{color:#64748b}
-#pyth-live2 .question{font-weight:700;margin-bottom:5px;font-size:15px}
-#pyth-live2 .instruction{font-size:13px;color:#64748b;margin-bottom:8px;line-height:1.35}
-#pyth-live2 .workgrid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(250px,.9fr);gap:10px;align-items:stretch}
+#pyth-live2 .topline{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:2px 4px}
+#pyth-live2 .topline strong{font-size:21px;font-weight:800;color:var(--ink)}
+#pyth-live2 .topline .right{display:flex;align-items:center;gap:8px}
+#pyth-live2 .pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-weight:700;font-size:13px;color:var(--ink)}
+#pyth-live2 .muted{color:var(--muted)}
+#pyth-live2 .panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 6px 24px rgba(30,42,120,.07)}
+#pyth-live2 .question{font-weight:700;margin-bottom:8px;font-size:16px;color:var(--ink)}
+#pyth-live2 .instruction{font-size:14px;color:var(--muted);margin-bottom:10px;line-height:1.45;max-width:70ch}
+#pyth-live2 .workgrid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(260px,.9fr);gap:14px;align-items:stretch}
 #pyth-live2 .figure-layout{display:block}
-#pyth-live2 #pl-drawing{min-width:0}
+#pyth-live2 #pl-drawing{min-width:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;
+ background-color:#fff;
+ background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+ background-size:24px 24px}
 #pyth-live2 svg{width:100%;height:500px;max-height:58vh;min-height:380px;display:block}
-#pyth-live2 .sq{fill:#e6a23c;fill-opacity:.13;stroke:#c18427;stroke-width:2.2}
-#pyth-live2 .tri{fill:#60a5fa;fill-opacity:.10;stroke:#1f2937;stroke-width:2.7}
-#pyth-live2 .vertex{font-size:17px;font-weight:700;fill:#1f2937;paint-order:stroke;stroke:#fff;stroke-width:4px}
-#pyth-live2 .side-key{display:flex;flex-wrap:wrap;align-items:center;gap:4px 18px;border:1px solid #cbd5e1;border-radius:8px;padding:7px 10px;background:#f8fafc;font-size:13px;line-height:1.5;margin:0 0 8px}
- #pyth-live2 .side-key strong{display:inline;margin:0 4px 0 0}
- #pyth-live2 .side-key div{white-space:nowrap}
-#pyth-live2 .side-key strong{display:inline;margin:0 4px 0 0}
-#pyth-live2 input{background:#fff;border:1px solid #94a3b8;border-radius:7px;padding:7px;color:#1f2937;text-align:center;min-width:0;font:14px Arial,sans-serif}
-#pyth-live2 input:focus{outline:2px solid #93c5fd;outline-offset:1px}
-#pyth-live2 input.good{background:#dcfce7!important;border:3px solid #16a34a!important;color:#14532d!important;font-weight:800!important;opacity:1!important}
-#pyth-live2 input.bad{background:#fee2e2!important;border:3px solid #dc2626!important;color:#991b1b!important;font-weight:800!important;opacity:1!important}
+#pyth-live2 .sq{stroke-width:2.4;stroke-linejoin:round}
+#pyth-live2 .sq0{fill:var(--a);fill-opacity:.16;stroke:var(--a)}
+#pyth-live2 .sq1{fill:var(--b);fill-opacity:.16;stroke:var(--b)}
+#pyth-live2 .sq2{fill:var(--c);fill-opacity:.15;stroke:var(--c)}
+#pyth-live2 .tri{fill:#fff;fill-opacity:.85;stroke:var(--ink);stroke-width:3;stroke-linejoin:round}
+#pyth-live2 .vertex{font-size:19px;font-weight:800;fill:var(--ink);paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}
+#pyth-live2 .len{font-size:16px;font-weight:800;paint-order:stroke;stroke:#fff;stroke-width:6px;stroke-linejoin:round;text-anchor:middle;dominant-baseline:central}
+#pyth-live2 .len.unk{font-size:24px}
+#pyth-live2 .len0{fill:#0b7a68}
+#pyth-live2 .len1{fill:#b36200}
+#pyth-live2 .len2{fill:#5a3fd6}
+#pyth-live2 .side-key{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0 0 10px;font-size:14px}
+#pyth-live2 .side-key strong{margin-right:4px;color:var(--muted);font-weight:600}
+#pyth-live2 .side-key div{white-space:nowrap;background:#fff;border:1px solid var(--line);border-left:5px solid var(--ink2);border-radius:8px;padding:4px 10px;font-weight:700}
+#pyth-live2 .side-key div:nth-of-type(1){border-left-color:var(--a)}
+#pyth-live2 .side-key div:nth-of-type(2){border-left-color:var(--b)}
+#pyth-live2 .side-key div:nth-of-type(3){border-left-color:var(--c)}
+#pyth-live2 input{background:#fff;border:2px solid #b8c4e6;border-radius:9px;padding:8px;color:var(--text);text-align:center;min-width:0;font:700 15px Nunito,Arial,sans-serif;transition:border-color .15s,box-shadow .15s}
+#pyth-live2 input:focus{outline:none;border-color:var(--ink2);box-shadow:0 0 0 4px rgba(59,76,192,.18)}
+#pyth-live2 input.good{background:#e3f8ea!important;border:3px solid var(--ok)!important;color:#0b5b2c!important;font-weight:800!important;opacity:1!important}
+#pyth-live2 input.bad{background:#ffe8e8!important;border:3px solid var(--bad)!important;color:#8f1d1d!important;font-weight:800!important;opacity:1!important}
 #pyth-live2 input:read-only{cursor:default;opacity:1}
-#pyth-live2 button{appearance:none;-webkit-appearance:none;border:1px solid #1d4ed8!important;border-radius:7px!important;padding:8px 12px!important;font:700 13px Arial,Helvetica,sans-serif!important;background:#2563eb!important;color:#fff!important;cursor:pointer!important;opacity:1}
-#pyth-live2 button:hover:not(:disabled){background:#1d4ed8!important}
-#pyth-live2 button:disabled{opacity:.45!important;cursor:not-allowed!important}
-#pyth-live2 .proof{border:2px solid #94a3b8;border-radius:9px;padding:9px;background:#f8fafc;line-height:1.42;font-size:12.5px;min-height:100%;overflow-wrap:anywhere}
-#pyth-live2 .proof>strong{display:block;color:#1e3a8a;font-size:14px;margin-bottom:5px}
-#pyth-live2 .proof p{margin:4px 0}
-#pyth-live2 .formula{font-weight:700;color:#1e3a8a;margin-top:5px}
-#pyth-live2 .feedback{font-size:12.5px;line-height:1.35;min-height:18px;margin-top:6px}
-#pyth-live2 .step2{border-top:1px solid #cbd5e1;padding-top:8px;margin-top:8px}
+#pyth-live2 button{appearance:none;-webkit-appearance:none;border:0!important;border-radius:10px!important;padding:10px 16px!important;font:800 14px Nunito,Arial,sans-serif!important;background:var(--ink2)!important;color:#fff!important;cursor:pointer!important;opacity:1;box-shadow:0 3px 0 var(--ink);transition:transform .1s,box-shadow .1s,background .15s}
+#pyth-live2 button:hover:not(:disabled){background:#2f3fae!important}
+#pyth-live2 button:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+#pyth-live2 button:focus-visible{outline:3px solid #ffd43b;outline-offset:2px}
+#pyth-live2 button:disabled{opacity:.45!important;cursor:not-allowed!important;box-shadow:none}
+#pyth-live2 .proof{border:1px solid var(--line);border-radius:12px;padding:12px 14px 12px 40px;line-height:30px;font-size:15px;min-height:100%;overflow-wrap:anywhere;position:relative;
+ background-color:#fff;
+ background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 30px;background-position:0 11px}
+#pyth-live2 .proof::before{content:"";position:absolute;left:30px;top:0;bottom:0;width:2px;background:var(--margin);opacity:.55}
+#pyth-live2 .proof>strong{display:block;color:var(--ink);font-size:15px;font-weight:800;line-height:30px;margin-bottom:0}
+#pyth-live2 .proof p{margin:0;font-family:Kalam,"Comic Sans MS",cursive;font-size:17px;color:#26307a}
+#pyth-live2 .proof .muted{font-family:Nunito,sans-serif;font-size:14px}
+#pyth-live2 .formula{font-weight:700;color:var(--ink);margin-top:0}
+#pyth-live2 .feedback{font-size:14px;font-weight:600;line-height:1.45;min-height:20px;margin-top:8px}
+#pyth-live2 .step2{border-top:2px dashed var(--line);padding-top:10px;margin-top:10px}
 #pyth-live2 .flex{display:flex}
 #pyth-live2 .items-center{align-items:center}
 #pyth-live2 .gap-2{gap:8px}
 #pyth-live2 .w-full{width:100%}
-#pyth-live2 .max-w-sm{max-width:320px}
-#pyth-live2 .font-semibold{font-weight:700}
+#pyth-live2 .max-w-sm{max-width:360px}
+#pyth-live2 .font-semibold{font-weight:800}
 #pyth-live2 .font-bold{font-weight:800}
 #pyth-live2 .mb-2{margin-bottom:8px}
 #pyth-live2 .mt-2{margin-top:8px}
-#pyth-live2 .text-sm{font-size:13px}
-#pyth-live2 .text-lg{font-size:18px}
-#pyth-live2 .text-xl{font-size:21px}
+#pyth-live2 .text-sm{font-size:14px}
+#pyth-live2 .text-lg{font-size:19px}
+#pyth-live2 .text-xl{font-size:26px;color:var(--ink)}
 #pyth-live2 .text-center{text-align:center}
-#pyth-live2 .finish-form{max-width:440px;margin:10px auto 3px}
-#pyth-live2 .finish-form label{display:block;font-size:14px;font-weight:700;margin:9px 0 4px}
-#pyth-live2 .finish-form input{width:100%;text-align:left;padding:9px}
-#pyth-live2 .finish-form button{margin-top:12px;width:100%}
-#pyth-live2 .send-status{font-size:13px;text-align:center;margin-top:9px;min-height:20px}
+#pyth-live2 .finish-form{max-width:440px;margin:14px auto 6px}
+#pyth-live2 .finish-form label{display:block;font-size:14px;font-weight:800;margin:12px 0 5px}
+#pyth-live2 .finish-form input{width:100%;text-align:left;padding:10px}
+#pyth-live2 .finish-form button{margin-top:16px;width:100%}
+#pyth-live2 .send-status{font-size:14px;font-weight:600;text-align:center;margin-top:10px;min-height:20px}
 #pyth-live2 .bottomline{display:flex;justify-content:flex-end}
 @media(max-width:720px){
  body{padding:6px}
  #pyth-live2 .workgrid{grid-template-columns:1fr}
- #pyth-live2 .figure-layout{display:block}
  #pyth-live2 svg{height:420px;max-height:none;min-height:340px}
- #pyth-live2 .side-key{gap:3px 12px}
  #pyth-live2 .proof{min-height:auto}
 }
 @media(min-width:721px) and (max-height:800px){
  #pyth-live2 svg{height:430px;min-height:340px;max-height:52vh}
- #pyth-live2 .panel{padding:8px}
- #pyth-live2{gap:6px}
+ #pyth-live2 .panel{padding:10px}
+ #pyth-live2{gap:8px}
 }
+@media(prefers-reduced-motion:reduce){#pyth-live2 *{transition:none!important}}
 </style>
 </head>
 <body>
 <div id="pyth-live2">
  <div class="topline">
   <strong>Théorème de Pythagore</strong>
-  <span id="pl-score" class="muted">Score : 0 / 5</span>
+  <div class="right"><span id="pl-count" class="pill">Question 1 / 5</span><span id="pl-score" class="pill">Score : 0 / 5</span></div>
  </div>
  <div class="panel">
   <div id="pl-question" class="question"></div>
-  <div id="pl-instruction" class="instruction"></div>
   <div id="pl-side-key" class="side-key"></div>
   <div class="workgrid" id="pl-workgrid">
    <div>
     <div class="figure-layout">
      <div id="pl-drawing"></div>
-     
     </div>
     <div id="pl-area-feedback" class="feedback" aria-live="polite"></div>
-    <div id="pl-area-controls" style="margin-top:7px">
+    <div id="pl-area-controls" style="margin-top:8px">
+     <div id="pl-instruction" class="instruction"></div>
      <button id="pl-verify-areas" type="button">Vérifier les aires</button>
     </div>
     <div id="pl-length-zone" class="step2 hidden">
-     <div class="font-semibold mb-2">Longueur recherchée</div>
+     <div id="pl-instruction2" class="instruction"></div>
      <div class="flex items-center gap-2 max-w-sm">
-      <input id="pl-length-answer" type="number" step="any" placeholder="Valeur" aria-label="Longueur recherchée" class="w-full">
-      <span>cm</span>
+      <input id="pl-length-answer" type="number" step="any" placeholder="…" aria-label="Longueur recherchée" style="width:84px;height:36px;font-size:17px">
       <button id="pl-verify-length" type="button">Vérifier</button>
+      <button id="pl-next" type="button" class="hidden">Question suivante</button>
      </div>
      <div id="pl-length-feedback" class="feedback" aria-live="polite"></div>
     </div>
@@ -126,9 +148,6 @@ body{padding:10px}
    </form>
   </div>
  </div>
- <div class="bottomline">
-  <button id="pl-next" type="button" class="hidden">Question suivante</button>
- </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
@@ -142,7 +161,6 @@ const EMAILJS_SERVICE_ID='service_ddxhm89';
 const EMAILJS_TEMPLATE_ID='template_ycpslgy';
 let emailReady=false;
 if(window.emailjs){try{window.emailjs.init({publicKey:EMAILJS_PUBLIC_KEY});emailReady=true}catch(error){console.error('Initialisation EmailJS impossible :',error)}}
-// Banque de triplets pythagoriciens : les trois longueurs sont toujours entières.
 const triples=[
  [3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29],
  [6,8,10],[9,12,15],[10,24,26],[12,16,20],[15,20,25],
@@ -151,25 +169,15 @@ const triples=[
  [24,45,51],[20,48,52],[14,48,50],[27,36,45],[30,40,50],
  [15,36,39]
 ].filter(t=>t[0]>0);
-
-// Mélange de la banque, puis sélection de cinq triangles différents.
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-// Pour les deux premières questions, les deux côtés de l'angle droit
-// mesurent chacun entre 1 et 15 cm.
 const firstQuestionPool=triples.filter(t=>t[0]>=1&&t[0]<=15&&t[1]>=1&&t[1]<=15);
 const firstTwo=shuffle(firstQuestionPool).slice(0,2);
-
-// Les trois dernières questions sont tirées dans une banque plus large,
-// sans reprendre les triangles déjà utilisés.
 const remaining=shuffle(triples.filter(t=>!firstTwo.some(chosen=>
  chosen[0]===t[0]&&chosen[1]===t[1]&&chosen[2]===t[2]
 ))).slice(0,3);
 const chosen=[...firstTwo,...remaining];
 const vertices=[['A','B','C'],['M','N','P'],['R','S','T'],['D','E','F'],['K','L','M']];
 const all=chosen.map((t,i)=>({v:vertices[i],a:t[0],b:t[1],u:'c'}));
-
-// Les deux premières questions cherchent toujours l'hypoténuse.
-// Dans les trois dernières, deux ou trois questions cherchent un côté de l'angle droit.
 const legCount=2+Math.floor(Math.random()*2);
 const lastTargets=shuffle(['a','b']).slice(0,2);
 if(legCount===3)lastTargets.push(shuffle(['a','b'])[0]);
@@ -178,7 +186,8 @@ all[2].u=lastTargets[0];
 all[3].u=lastTargets[1];
 all[4].u=lastTargets[2];
 const order=[0,1,...shuffle([2,3,4])];
-let index=0,score=0,q,lengthTries=0,areaTries=0;
+let index=0,score=0,q,lengthTries=0,areaTries=0,qPos=null;
+const lenInput=$('length-answer'),lenRow=lenInput.parentNode;
 const names=q=>({a:q.v[0]+q.v[1],b:q.v[0]+q.v[2],c:q.v[1]+q.v[2]});
 const areas=q=>({a:q.a*q.a,b:q.b*q.b,c:q.a*q.a+q.b*q.b});
 const sideLengths=q=>({a:q.a,b:q.b,c:Math.hypot(q.a,q.b)});
@@ -189,13 +198,14 @@ function normal(p,r,t){const d=sub(r,p),len=Math.hypot(d.x,d.y);let n=P(-d.y/len
 function square(p,r,t){const d=sub(r,p),len=Math.hypot(d.x,d.y),n=normal(p,r,t),off=mul(n,len);return[p,r,add(r,off),add(p,off)]}
 function render(){
  q=all[order[index]];lengthTries=0;areaTries=0;
+ $('count').textContent='Question '+(index+1)+' / 5';
  $('question').textContent='Calcule la longueur '+names(q)[q.u]+'.';
  $('instruction').textContent="Étape 1 : Calcule l'aire des carrés dont tu connais le côté et utilise l'égalité de Pythagore pour en déduire l'aire du troisième carré.";
  $('length-zone').classList.add('hidden');$('next').classList.add('hidden');
- $('area-feedback').textContent='';$('area-feedback').style.color='#1f2937';
+ $('area-feedback').textContent='';$('area-feedback').style.color='#1f2433';
  $('length-feedback').textContent='';$('proof').innerHTML='';
  $('area-controls').classList.remove('hidden');$('verify-areas').disabled=false;
- $('length-answer').value='';$('verify-length').disabled=false;draw();
+ lenRow.insertBefore(lenInput,lenRow.firstChild);lenInput.value='';lenInput.readOnly=false;lenInput.classList.remove('good','bad');$('verify-length').disabled=false;qPos=null;draw();
 }
 function draw(){
  const a=q.a*22,b=q.b*22;let pts=[P(0,0),P(a,0),P(0,b)];
@@ -207,14 +217,37 @@ function draw(){
  const scale=Math.min(700/(maxX-minX),470/(maxY-minY)),X=x=>50+(x-minX)*scale,Y=y=>45+(y-minY)*scale,poly=p=>p.map(z=>`${X(z.x)},${Y(z.y)}`).join(' ');
  const centers=sq.map(p=>mul(p.reduce((s,z)=>add(s,z),P(0,0)),.25));
  let svg='<svg viewBox="0 0 800 560" role="img" aria-label="Triangle rectangle et trois carrés">';
- sq.forEach(p=>svg+=`<polygon class="sq" points="${poly(p)}"/>`);
+ sq.forEach((p,i)=>svg+=`<polygon class="sq sq${i}" points="${poly(p)}"/>`);
  svg+=`<polygon class="tri" points="${poly(pts)}"/>`;
  const u=mul(sub(B,A),1/Math.hypot(B.x-A.x,B.y-A.y)),w=mul(sub(C,A),1/Math.hypot(C.x-A.x,C.y-A.y)),r=20;
  const p1=add(A,mul(u,r)),p2=add(add(A,mul(u,r)),mul(w,r)),p3=add(A,mul(w,r));
- svg+=`<polyline points="${X(p1.x)},${Y(p1.y)} ${X(p2.x)},${Y(p2.y)} ${X(p3.x)},${Y(p3.y)}" fill="none" stroke="#1f2937" stroke-width="2"/>`;
+ svg+=`<polyline points="${X(p1.x)},${Y(p1.y)} ${X(p2.x)},${Y(p2.y)} ${X(p3.x)},${Y(p3.y)}" fill="none" stroke="#1e2a78" stroke-width="2.4"/>`;
  pts.forEach((p,i)=>{svg+=`<text class="vertex" x="${X(p.x)+(i===1?12:-18)}" y="${Y(p.y)+(i===2?21:-10)}">${q.v[i]}</text>`});
- centers.forEach((p,i)=>{const key=['a','b','c'][i],cx=X(p.x),cy=Y(p.y);svg+=`<foreignObject x="${cx-49}" y="${cy-23}" width="98" height="46"><div xmlns="http://www.w3.org/1999/xhtml" style="width:98px;height:46px;display:flex;align-items:center;justify-content:center"><input data-area="${key}" type="number" step="any" aria-label="Aire du carré sur ${names(q)[key]}" placeholder="Aire" style="width:90px;height:40px;text-align:center;font-size:17px;padding:5px"/></div></foreignObject>`});
- svg+='</svg>'; $('drawing').innerHTML=svg;
+ const drawLabels=()=>{
+  const R=(x,y,w,h)=>({x1:x-w,x2:x+w,y1:y-h,y2:y+h}),ov=(a,b)=>Math.max(0,Math.min(a.x2,b.x2)-Math.max(a.x1,b.x1))*Math.max(0,Math.min(a.y2,b.y2)-Math.max(a.y1,b.y1)),vb=R(400,280,396,276),placed=[];
+  const sides=[[A,B,'a',q.a,C],[A,C,'b',q.b,B],[B,C,'c',Math.hypot(q.a,q.b),A]].map((s,i)=>[...s,i]);
+  // Cherche la meilleure position le long d'un côté (au milieu en priorité), sans chevaucher les autres éléments.
+  const place=([p1,p2,key,val,t,i],hw,hh,offs,avoid)=>{
+   const ni=mul(normal(p1,p2,t),-1),k=Math.abs(ni.x)*hw+Math.abs(ni.y)*hh+4,sx=X(p1.x),sy=Y(p1.y),ex=X(p2.x),ey=Y(p2.y);
+   let best=null,bc=1e12,n=0;
+   [.5,.4,.6,.3,.7,.2,.8].forEach(f=>offs(k).forEach(o=>{
+    const x=sx+(ex-sx)*f+ni.x*o,y=sy+(ey-sy)*f+ni.y*o,r=R(x,y,hw,hh);
+    let c=n++*.5+5*(4*hw*hh-ov(r,vb));
+    avoid.forEach(b=>c+=3*ov(r,b));inRects.forEach(b=>c+=2*ov(r,b));
+    if(c<bc){bc=c;best=[x,y]}}));
+   return best};
+  const U=sides.find(s=>s[2]===q.u),lab=[];
+  // 1) emplacement de la future boîte « AB = … cm » : posée sur son propre côté
+  qPos=place(U,80,22,k=>[0,k,-k],[]);
+  const boxR=R(qPos[0],qPos[1],80,22);
+  // 2) longueurs données, puis « ? » : toujours collés à leur côté
+  [...sides.filter(s=>s[2]!==q.u),U].forEach(s=>{
+   const unk=s[2]===q.u,txt=unk?'?':s[3]+' cm',hw=unk?7:txt.length*4.8+2,hh=unk?12:9,best=place(s,hw,hh,k=>[k,k+12,0],unk?lab:[...lab,boxR]);
+   lab.push(R(best[0],best[1],hw,hh));
+   svg+=`<text class="len len${s[5]}${unk?' unk':''}" x="${best[0]}" y="${best[1]}">${txt}</text>`})};
+ const inRects=[];
+ centers.forEach((p,i)=>{const key=['a','b','c'][i],cx=X(p.x),cy=Y(p.y),s=Math.hypot(sq[i][1].x-sq[i][0].x,sq[i][1].y-sq[i][0].y)*scale,w=Math.round(Math.max(56,Math.min(90,s-14))),h=Math.round(Math.max(30,Math.min(40,s-14))),fs=w>70?17:15;inRects.push({x1:cx-w/2,x2:cx+w/2,y1:cy-h/2,y2:cy+h/2});svg+=`<foreignObject x="${cx-(w+8)/2}" y="${cy-(h+6)/2}" width="${w+8}" height="${h+6}"><div xmlns="http://www.w3.org/1999/xhtml" style="width:${w+8}px;height:${h+6}px;display:flex;align-items:center;justify-content:center"><input data-area="${key}" type="number" step="any" aria-label="Aire du carré sur ${names(q)[key]}" placeholder="Aire" style="width:${w}px;height:${h}px;text-align:center;font-size:${fs}px;padding:3px"/></div></foreignObject>`});
+ drawLabels();svg+='</svg>'; $('drawing').innerHTML=svg;
  const n=names(q),lengths=sideLengths(q);
  $('side-key').innerHTML=`<strong>Longueurs</strong><div>${n.a} = ${q.u==='a'?'?':lengths.a+' cm'}</div><div>${n.b} = ${q.u==='b'?'?':lengths.b+' cm'}</div><div>${n.c} = ${q.u==='c'?'?':lengths.c+' cm'}</div>`;
 }
@@ -225,8 +258,13 @@ function proofAreas(){
  else html+=`<p class="formula">${n.b}² = ${n.c}² − ${n.a}²</p><p class="formula">${n.b}² = ${e.c} − ${e.a} = ${e.b} cm²</p>`;
  $('proof').innerHTML=html;
 }
-function goToLength(){$('area-controls').classList.add('hidden');$('length-zone').classList.remove('hidden');$('instruction').textContent='Étape 2 : déduis-en la longueur recherchée.'}
-function setAreaState(el,state){el.classList.remove('good','bad');el.classList.add(state);el.style.setProperty('background-color',state==='good'?'#dcfce7':'#fee2e2','important');el.style.setProperty('border',state==='good'?'3px solid #16a34a':'3px solid #dc2626','important');el.style.setProperty('color',state==='good'?'#14532d':'#991b1b','important');el.style.setProperty('font-weight','800','important')}
+function goToLength(){$('area-controls').classList.add('hidden');$('length-zone').classList.remove('hidden');$('instruction2').textContent='Étape 2 : déduis-en la longueur recherchée.';
+ const svgEl=$('drawing').querySelector('svg'),t=svgEl&&svgEl.querySelector('.unk');
+ if(t&&qPos){t.style.display='none';const fo=document.createElementNS('http://www.w3.org/2000/svg','foreignObject');fo.setAttribute('x',qPos[0]-80);fo.setAttribute('y',qPos[1]-22);fo.setAttribute('width',160);fo.setAttribute('height',44);
+  const d=document.createElement('div');d.style.cssText='width:160px;height:44px;display:flex;align-items:center;justify-content:center;gap:6px;background:#fff;border:2px solid #3b4cc0;border-radius:12px;box-shadow:0 3px 10px rgba(30,42,120,.25);font:800 18px Nunito,Arial,sans-serif;color:#1e2a78';
+  lenInput.style.width='58px';lenInput.style.height='30px';
+  d.innerHTML=`<span>${names(q)[q.u]} =</span>`;d.appendChild(lenInput);d.insertAdjacentHTML('beforeend','<span>cm</span>');fo.appendChild(d);svgEl.appendChild(fo);lenInput.focus()}}
+function setAreaState(el,state){el.classList.remove('good','bad');el.classList.add(state);el.style.setProperty('background-color',state==='good'?'#e3f8ea':'#ffe8e8','important');el.style.setProperty('border',state==='good'?'3px solid #12a150':'3px solid #e03131','important');el.style.setProperty('color',state==='good'?'#0b5b2c':'#8f1d1d','important');el.style.setProperty('font-weight','800','important')}
 function areaAdvice(wrongKeys){
  const n=names(q),advice=[];
  wrongKeys.forEach(k=>{
@@ -241,23 +279,25 @@ $('verify-areas').addEventListener('click',()=>{
  areaTries++;const e=areas(q);let allCorrect=true;const wrongKeys=[];
  ['a','b','c'].forEach(k=>{const el=root.querySelector(`[data-area="${k}"]`);if(el.readOnly)return;const correct=el.value.trim()!==''&&close(Number(el.value),e[k]);if(correct){setAreaState(el,'good');el.readOnly=true}else{setAreaState(el,'bad');wrongKeys.push(k);allCorrect=false}});
  ['a','b','c'].forEach(k=>{const el=root.querySelector(`[data-area="${k}"]`);if(!el.readOnly)allCorrect=false});
- if(allCorrect){$('area-feedback').textContent='Les trois aires sont correctes.';$('area-feedback').style.color='#16a34a';proofAreas();goToLength();return}
+ if(allCorrect){$('area-feedback').textContent='Les trois aires sont correctes.';$('area-feedback').style.color='#12a150';proofAreas();goToLength();return}
  if(areaTries>=2){
   ['a','b','c'].forEach(k=>{const el=root.querySelector(`[data-area="${k}"]`);if(!el.readOnly){el.value=e[k];setAreaState(el,'good');el.readOnly=true}});
-  $('area-feedback').textContent='Voici les aires correctes. Tu peux maintenant passer au calcul de la longueur.';$('area-feedback').style.color='#d97706';proofAreas();goToLength();
- }else{$('area-feedback').innerHTML='Certaines aires sont incorrectes.<br>'+areaAdvice(wrongKeys);$('area-feedback').style.color='#1f2937'}
+  $('area-feedback').textContent='Voici les aires correctes. Tu peux maintenant passer au calcul de la longueur.';$('area-feedback').style.color='#d9730d';proofAreas();goToLength();
+ }else{$('area-feedback').innerHTML='Certaines aires sont incorrectes.<br>'+areaAdvice(wrongKeys);$('area-feedback').style.color='#1f2433'}
 });
 $('verify-length').addEventListener('click',()=>{
- const answer=Number($('length-answer').value),correct=target(q);
- if(close(answer,correct)){
+ const answer=Number(lenInput.value),correct=target(q);
+ if(close(answer,correct)){lenInput.classList.remove('bad');lenInput.classList.add('good');lenInput.readOnly=true;
   if(lengthTries<2)score+=areaTries>=2?0.5:1;
-  $('score').textContent=`Score : ${score} / 5`;$('length-feedback').textContent='Bonne réponse !';$('length-feedback').style.color='#16a34a';$('verify-length').disabled=true;$('next').classList.remove('hidden');proofLength();
+  $('score').textContent=`Score : ${score} / 5`;$('length-feedback').textContent='Bonne réponse !';$('length-feedback').style.color='#12a150';$('verify-length').disabled=true;$('next').classList.remove('hidden');proofLength();
  }else{
-  lengthTries++;
-  if(lengthTries<2){$('length-feedback').textContent='Ce n’est pas la bonne réponse. Essaie encore.';$('length-feedback').style.color='#d97706'}
-  else{$('length-feedback').textContent=`La longueur recherchée est ${correct} cm.`;$('length-feedback').style.color='#d97706';$('verify-length').disabled=true;$('next').classList.remove('hidden');proofLength()}
+  lengthTries++;lenInput.classList.add('bad');
+  if(lengthTries<2){$('length-feedback').textContent='Ce n’est pas la bonne réponse. Essaie encore.';$('length-feedback').style.color='#d9730d'}
+  else{lenInput.value=correct;lenInput.classList.remove('bad');lenInput.classList.add('good');lenInput.readOnly=true;$('length-feedback').textContent=`La longueur recherchée est ${correct} cm.`;$('length-feedback').style.color='#d9730d';$('verify-length').disabled=true;$('next').classList.remove('hidden');proofLength()}
  }
 });
+lenInput.addEventListener('input',()=>lenInput.classList.remove('bad'));
+lenInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('verify-length').click()}});
 function proofLength(){
  const n=names(q),e=areas(q),k=q.u,known=k==='a'?'b':'a',missing=n[k],knownName=n[known],c=n.c;
  if(k==='c')$('proof').innerHTML+=`<p class="formula">${c} = √${e.c} = ${target(q)} cm</p>`;
@@ -266,17 +306,17 @@ function proofLength(){
 function finishExercise(){
  $('question').textContent='';$('instruction').textContent='';$('workgrid').classList.add('hidden');
  $('drawing').innerHTML='';$('side-key').innerHTML='';$('side-key').classList.add('hidden');$('length-zone').classList.add('hidden');$('area-controls').classList.add('hidden');$('area-feedback').textContent='';$('proof').innerHTML='';
- $('next').classList.add('hidden');$('final-score').textContent=`${score} / 5`;$('finish').classList.remove('hidden');
+ $('next').classList.add('hidden');$('count').classList.add('hidden');$('final-score').textContent=`${score} / 5`;$('finish').classList.remove('hidden');
 }
 $('result-form').addEventListener('submit',async event=>{
  event.preventDefault();const prenom=$('firstname').value.trim(),classe=$('class').value.trim(),button=$('send-result'),status=$('send-status');
- if(!prenom||!classe){status.textContent='Merci de renseigner ton prénom et ta classe.';status.style.color='#dc2626';return}
- if(!emailReady||!window.emailjs){status.textContent="Le service d'envoi n'est pas disponible. Préviens ton professeur.";status.style.color='#dc2626';return}
+ if(!prenom||!classe){status.textContent='Merci de renseigner ton prénom et ta classe.';status.style.color='#e03131';return}
+ if(!emailReady||!window.emailjs){status.textContent="Le service d'envoi n'est pas disponible. Préviens ton professeur.";status.style.color='#e03131';return}
  button.disabled=true;button.textContent='Envoi en cours…';status.textContent='';
  const dateEnvoi=new Date().toLocaleString('fr-FR');
  const templateParams={prenom,name:prenom,student_name:prenom,classe,class:classe,student_class:classe,score:`${score} / 5`,resultat:`${score} / 5`,result:`${score} / 5`,note:`${score} / 5`,date:dateEnvoi,date_envoi:dateEnvoi,exercise:'Théorème de Pythagore',exercice:'Théorème de Pythagore',exercise_name:'Théorème de Pythagore',exerciseur:'Théorème de Pythagore'};
- try{await window.emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,templateParams);status.textContent='Résultat envoyé à ton professeur. Merci !';status.style.color='#16a34a';button.textContent='Résultat envoyé'}
- catch(error){console.error('Erreur EmailJS :',error);status.textContent="L'envoi a échoué. Vérifie les informations ou préviens ton professeur.";status.style.color='#dc2626';button.disabled=false;button.textContent='Réessayer'}
+ try{await window.emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,templateParams);status.textContent='Résultat envoyé à ton professeur. Merci !';status.style.color='#12a150';button.textContent='Résultat envoyé'}
+ catch(error){console.error('Erreur EmailJS :',error);status.textContent="L'envoi a échoué. Vérifie les informations ou préviens ton professeur.";status.style.color='#e03131';button.disabled=false;button.textContent='Réessayer'}
 });
 $('next').addEventListener('click',()=>{index++;if(index>=5){finishExercise();return}render()});
 render();
